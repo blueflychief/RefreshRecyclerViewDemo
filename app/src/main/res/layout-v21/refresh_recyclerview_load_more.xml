@@ -16,7 +16,7 @@
         android:orientation="horizontal">
 
         <ProgressBar
-            style="@android:style/Widget.Material.ProgressBar"
+            style="@android:style/Widget.Material.ProgressBar.Small"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
@@ -29,12 +29,30 @@
     </LinearLayout>
 
     <TextView
+        android:id="@+id/tv_pull_load_more"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:padding="10dp"
+        android:text="上拉加载更多"
+        android:visibility="gone" />
+
+    <TextView
         android:id="@+id/tv_no_more"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
         android:padding="10dp"
-        android:text="没有更多。。。"
+        android:text="没有更多"
+        android:visibility="gone" />
+
+    <TextView
+        android:id="@+id/tv_error"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:padding="10dp"
+        android:text="加载失败，点击重新加载"
         android:visibility="gone" />
 
 </LinearLayout>

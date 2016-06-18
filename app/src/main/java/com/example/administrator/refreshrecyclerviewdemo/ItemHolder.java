@@ -9,8 +9,8 @@ import android.widget.TextView;
  * Created by Lsq on 6/17/2016.--7:43 PM
  */
 public class ItemHolder extends RecyclerView.ViewHolder {
-    private TextView tv;
-    private ImageView iv;
+   public TextView tv;
+   public ImageView iv;
 
     public ItemHolder(View itemView) {
         super(itemView);

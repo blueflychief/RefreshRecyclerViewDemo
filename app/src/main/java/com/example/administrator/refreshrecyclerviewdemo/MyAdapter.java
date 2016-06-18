@@ -15,10 +15,10 @@ import java.util.List;
 public class MyAdapter extends RefreshAdapter<ItemHolder> {
 
     private Context mContext;
-    private List mDatas;
+    private List<String> mDatas;
 
 
-    public MyAdapter(Context context, List list, RefreshRecycleView refreshView) {
+    public MyAdapter(Context context, List<String> list, RefreshRecycleView refreshView) {
         super(context, list, refreshView);
         this.mContext = context;
         this.mDatas = list;
@@ -32,7 +32,17 @@ public class MyAdapter extends RefreshAdapter<ItemHolder> {
 
     @Override
     public void onBindHolder(ItemHolder holder, int position) {
+        holder.tv.setText(mDatas.get(position));
+    }
 
+
+    public void clearData() {
+        mDatas.clear();
+        notifyDataSetChanged();
+    }
+
+    public List getDatas() {
+        return mDatas;
     }
 
 

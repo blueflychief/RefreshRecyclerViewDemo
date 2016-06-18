@@ -16,27 +16,20 @@ import com.example.administrator.refreshrecyclerviewdemo.R;
 
 import static android.support.v7.widget.RecyclerView.LayoutManager;
 
+
 /**
- * <p>
- * 可刷新的RecycleView, 也可分页
+ * <p/>
+ * 可刷新的RecycleView, 也可分页，使用时会填充整个父布局
  */
 public class RefreshRecycleView extends SwipeRefreshLayout {
-
-    /**
-     * 加载更多
-     */
-    public interface OnLoadMoreListener {
-        /**
-         * 加载更多
-         */
-        void onLoadMore();
-    }
 
     private RefreshRecycleView refreshView;
     private LoadMoreRecyclerView mRecycleView;
     private OnLoadMoreListener mOnLoadMoreListener;
-    private boolean loadMoreEnable = true;
-    private View header, footer; // 头部和脚部
+    private OnFooterClickListener mOnFooterClickListener;
+    private boolean loadMoreEnable = true;  //是否能加载更多
+    private boolean mShowFooter = true;      //是否显示Footer
+    private View header, footer;             // 头部和脚部
 
     public RefreshRecycleView(Context context) {
         this(context, null);
@@ -47,7 +40,6 @@ public class RefreshRecycleView extends SwipeRefreshLayout {
         refreshView = this;
         mRecycleView = new LoadMoreRecyclerView(context);
         addView(mRecycleView, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
-        // 设置刷新动画的颜色
         setColorSchemeColors(
                 getResources().getColor(R.color.colorPrimary),
                 getResources().getColor(R.color.colorPrimary),
@@ -56,8 +48,6 @@ public class RefreshRecycleView extends SwipeRefreshLayout {
 
     /**
      * 设置适配器
-     *
-     * @param adapter 适配器
      */
     public void setAdapter(RefreshAdapter adapter) {
         mRecycleView.setAdapter(adapter);
@@ -77,8 +67,6 @@ public class RefreshRecycleView extends SwipeRefreshLayout {
 
     /**
      * 设置布局管理器
-     *
-     * @param manager 布局管理器
      */
     public void setLayoutManager(final LayoutManager manager) {
         if (manager instanceof GridLayoutManager) {
@@ -104,40 +92,74 @@ public class RefreshRecycleView extends SwipeRefreshLayout {
 
     /**
      * 添加分割线
-     *
-     * @param decor 分割线
      */
     public void addItemDecoration(RecyclerView.ItemDecoration decor) {
         mRecycleView.addItemDecoration(decor);
     }
 
+
+
+    public void setOnFooterClickListener(OnFooterClickListener listener) {
+        mOnFooterClickListener = listener;
+    }
+
     /**
      * 设置是否可以加载更多, 默认true
      */
-    public void setLoadMoreEnable(boolean enable) {
-        loadMoreEnable = enable;
+    public void setLoadMoreEnable(FooterTypeHandle type) {
+        switch (type) {
+            case TYPE_PULL_LOAD_MORE:
+            case TYPE_LOADING_MORE:
+            case TYPE_ERROR:
+                loadMoreEnable = true;
+                break;
+            case TYPE_NO_MORE:
+                loadMoreEnable = false;
+                break;
+        }
+        refreshFooter(type);
+    }
+
+    private void refreshFooter(FooterTypeHandle type) {
         if (loadMoreEnable) {
             if (getFooter() != null) {
-                getFooter().findViewById(R.id.ll_more).setVisibility(VISIBLE);
-                getFooter().findViewById(R.id.tv_no_more).setVisibility(GONE);
+                if (type == FooterTypeHandle.TYPE_PULL_LOAD_MORE) {
+                    getFooter().findViewById(R.id.ll_more).setVisibility(GONE);
+                    getFooter().findViewById(R.id.tv_no_more).setVisibility(GONE);
+                    getFooter().findViewById(R.id.tv_pull_load_more).setVisibility(VISIBLE);
+                    getFooter().findViewById(R.id.tv_error).setVisibility(GONE);
+                    return;
+                }
+
+                if (type == FooterTypeHandle.TYPE_LOADING_MORE) {
+                    getFooter().findViewById(R.id.ll_more).setVisibility(VISIBLE);
+                    getFooter().findViewById(R.id.tv_no_more).setVisibility(GONE);
+                    getFooter().findViewById(R.id.tv_pull_load_more).setVisibility(GONE);
+                    getFooter().findViewById(R.id.tv_error).setVisibility(GONE);
+                    return;
+                }
+
+                if (type == FooterTypeHandle.TYPE_ERROR) {
+                    getFooter().findViewById(R.id.ll_more).setVisibility(GONE);
+                    getFooter().findViewById(R.id.tv_no_more).setVisibility(GONE);
+                    getFooter().findViewById(R.id.tv_pull_load_more).setVisibility(GONE);
+                    getFooter().findViewById(R.id.tv_error).setVisibility(VISIBLE);
+                }
             }
         } else {
             if (getFooter() != null) {
                 getFooter().findViewById(R.id.ll_more).setVisibility(GONE);
-                getFooter().findViewById(R.id.tv_no_more).setVisibility(VISIBLE);
+                getFooter().findViewById(R.id.tv_pull_load_more).setVisibility(GONE);
+                getFooter().findViewById(R.id.tv_error).setVisibility(GONE);
+                if (getShowFooterWithNoMore()) {
+                    getFooter().findViewById(R.id.tv_no_more).setVisibility(VISIBLE);
+                } else {
+                    getFooter().findViewById(R.id.tv_no_more).setVisibility(GONE);
+                }
             }
         }
     }
 
-    private boolean mShowFooter = true;
-
-    public void setNoMoreShowFooter(boolean show) {
-        mShowFooter = show;
-    }
-
-    public boolean getNoMoreShowFooter() {
-        return mShowFooter;
-    }
 
     /**
      * @return 是否可以加载更多
@@ -146,21 +168,16 @@ public class RefreshRecycleView extends SwipeRefreshLayout {
         return loadMoreEnable;
     }
 
+
     /**
      * 设置加载更多监听
-     *
-     * @param listener {@link OnLoadMoreListener}
      */
     public void setOnLoadMoreListener(OnLoadMoreListener listener) {
         mOnLoadMoreListener = listener;
     }
 
-    /**
-     * 初始化默认的footer
-     */
-    private void initDefaultFooter() {
-        // 默认的footer
-        setFooter(R.layout.refresh_recyclerview_load_more);
+    public interface OnLoadMoreListener {
+        void onLoadMore();
     }
 
     /**
@@ -181,36 +198,48 @@ public class RefreshRecycleView extends SwipeRefreshLayout {
 
     /**
      * 添加头部
-     *
-     * @param resId 作为头部的布局资源id
      */
     public void setHeader(int resId) {
         this.header = LayoutInflater.from(getContext()).inflate(resId, mRecycleView, false);
     }
 
-    /**
-     * @return 头部视图
-     */
     public View getHeader() {
         return header;
     }
 
     /**
      * 添加脚部
-     *
-     * @param footer 作为脚部的布局
      */
     public void setFooter(View footer) {
         this.footer = footer;
     }
 
     /**
-     * 添加头部
-     *
-     * @param resId 作为脚部的布局资源id
+     * 添加脚部
      */
     public void setFooter(int resId) {
         this.footer = LayoutInflater.from(getContext()).inflate(resId, mRecycleView, false);
+
+        footer.findViewById(R.id.tv_error).setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mOnFooterClickListener.onErrorClick();
+            }
+        });
+
+        footer.findViewById(R.id.tv_pull_load_more).setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mOnFooterClickListener.onLoadMoreClick();
+            }
+        });
+    }
+
+    /**
+     * 初始化默认的footer
+     */
+    private void initDefaultFooter() {
+        setFooter(R.layout.refresh_recyclerview_load_more);
     }
 
     /**
@@ -218,6 +247,16 @@ public class RefreshRecycleView extends SwipeRefreshLayout {
      */
     public View getFooter() {
         return footer;
+    }
+
+
+    //没有更多时是否显示Footer
+    public void setShowFooterWithNoMore(boolean show) {
+        mShowFooter = show;
+    }
+
+    public boolean getShowFooterWithNoMore() {
+        return mShowFooter;
     }
 
     /**
@@ -266,7 +305,7 @@ public class RefreshRecycleView extends SwipeRefreshLayout {
                 public void run() {
                     if (getBottom() != 0 && getChildAt(findLastVisibleItemPosition()) != null && getBottom() >= getChildAt(findLastVisibleItemPosition()).getBottom()) {
                         // 最后一条正在显示的子视图在RecyclerView的上面, 说明子视图未充满RecyclerView
-                        setLoadMoreEnable(false); // 未充满则不能加载更多
+                        setLoadMoreEnable(FooterTypeHandle.TYPE_PULL_LOAD_MORE); // 未充满则不能加载更多
                         getAdapter().notifyDataSetChanged();
                     }
                 }
@@ -282,8 +321,10 @@ public class RefreshRecycleView extends SwipeRefreshLayout {
                     && mIsUp
                     && findLastVisibleItemPosition() == getLayoutManager().getItemCount() - 1) { // 滚动到了最后一个子视图
                 refreshView.mOnLoadMoreListener.onLoadMore(); // 执行加载更多
+                setLoadMoreEnable(FooterTypeHandle.TYPE_LOADING_MORE);
             }
         }
+
 
         private float mOldY = 0.0f;
         private float mNewY = 0.0f;

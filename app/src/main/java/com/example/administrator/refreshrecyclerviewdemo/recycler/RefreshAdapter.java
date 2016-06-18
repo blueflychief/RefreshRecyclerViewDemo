@@ -27,18 +27,16 @@ public abstract class RefreshAdapter<VH extends RecyclerView.ViewHolder> extends
     private final int TYPE_HEADER = TYPE_CONTENT + 2;
 
     private List<Integer> viewTypes; // 子视图类型
-    private List datas;
+    private List mAllDatas;
 
     protected LayoutInflater inflater;
 
     /**
      * 创建适配器
-     *
-     * @param list 要显示的数据列表
      */
     public RefreshAdapter(Context context, List list, RefreshRecycleView refreshView) {
         this.refreshView = refreshView;
-        datas = list;
+        mAllDatas = list;
         viewTypes = new ArrayList<>();
 //            setItemTypes(viewTypes);
         inflater = LayoutInflater.from(context);
@@ -68,12 +66,12 @@ public abstract class RefreshAdapter<VH extends RecyclerView.ViewHolder> extends
         }
     }
 
+
     /**
      * 创建ViewHolder, 用来代替onCreateViewHolder()方法, 用法还是一样的
      *
      * @param parent   父控件
      * @param viewType 类型
-     * @return ViewHolder的子类实例
      */
     public abstract VH onCreateHolder(ViewGroup parent, int viewType);
 
@@ -87,9 +85,13 @@ public abstract class RefreshAdapter<VH extends RecyclerView.ViewHolder> extends
 
     @Override
     public int getItemCount() {
-        int count = datas.size();
-        if (refreshView.getNoMoreShowFooter()&&refreshView.getLoadMoreEnable() && refreshView.getFooter() != null) count += 1;
-        if (!refreshView.getNoMoreShowFooter()&&!refreshView.getLoadMoreEnable() && refreshView.getFooter() != null) count += 1;
+        int count = mAllDatas.size();
+        //还有更多，且Footer显示
+        if (refreshView.getLoadMoreEnable() && refreshView.getShowFooterWithNoMore() && refreshView.getFooter() != null)
+            count += 1;
+        //没有更多，但是还是需要显示Footer
+        if (!refreshView.getLoadMoreEnable() && refreshView.getShowFooterWithNoMore() && refreshView.getFooter() != null)
+            count += 1;
         if (refreshView.getHeader() != null) count += 1;
         return count;
     }
@@ -100,13 +102,14 @@ public abstract class RefreshAdapter<VH extends RecyclerView.ViewHolder> extends
             return TYPE_HEADER;
         }
         //此情况是没有更多时候显示footer，例如显示“没有更多”
-        else if (refreshView.getFooter() != null
+        else if (!refreshView.getLoadMoreEnable()
+                && refreshView.getShowFooterWithNoMore()
+                && refreshView.getFooter() != null
                 && position == getItemCount() - 1) {
             return TYPE_FOOTER;
         }
-        //此情况是没有更多时候不显示footer
+        //此情况是有更多时候显示footer
         else if (refreshView.getLoadMoreEnable()
-                && !refreshView.getNoMoreShowFooter()
                 && refreshView.getFooter() != null
                 && position == getItemCount() - 1) {
             return TYPE_FOOTER;
