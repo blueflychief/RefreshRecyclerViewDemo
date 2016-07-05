@@ -17,8 +17,8 @@ import java.util.List;
  *
  * @param <VH> ViewHolder的子类
  */
-public abstract class RefreshAdapter<VH extends RecyclerView.ViewHolder> extends RecyclerView.Adapter {
-    private RefreshRecycleView refreshView;
+public abstract class CustomRefreshAdapter<VH extends RecyclerView.ViewHolder> extends RecyclerView.Adapter {
+    private CustomRefreshRecycleView refreshView;
     // 内容类型
     protected final int TYPE_CONTENT = 1;
     // 底部加载更多
@@ -34,7 +34,7 @@ public abstract class RefreshAdapter<VH extends RecyclerView.ViewHolder> extends
     /**
      * 创建适配器
      */
-    public RefreshAdapter(Context context, List list, RefreshRecycleView refreshView) {
+    public CustomRefreshAdapter(Context context, List list, CustomRefreshRecycleView refreshView) {
         this.refreshView = refreshView;
         mAllDatas = list;
         viewTypes = new ArrayList<>();

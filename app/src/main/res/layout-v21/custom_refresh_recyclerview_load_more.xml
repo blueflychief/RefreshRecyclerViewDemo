@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="40dp"
+    android:layout_height="48dp"
     android:gravity="center"
-    android:orientation="vertical"
-    android:paddingBottom="2dp"
-    android:paddingTop="2dp">
+    android:orientation="vertical">
 
     <LinearLayout
         android:id="@+id/ll_more"
@@ -16,7 +14,7 @@
         android:visibility="gone">
 
         <ProgressBar
-            style="@android:style/Widget.ProgressBar.Small"
+            style="@android:style/Widget.Material.ProgressBar.Small"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
@@ -24,7 +22,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="10dp"
-            android:text="正在加载..." />
+            android:text="正在加载..."
+            android:textSize="14sp" />
 
     </LinearLayout>
 
@@ -35,6 +34,7 @@
         android:gravity="center"
         android:padding="10dp"
         android:text="上拉加载更多"
+        android:textSize="14sp"
         android:visibility="gone" />
 
     <TextView
@@ -44,6 +44,7 @@
         android:gravity="center"
         android:padding="10dp"
         android:text="没有更多"
+        android:textSize="14sp"
         android:visibility="gone" />
 
     <TextView
@@ -53,6 +54,7 @@
         android:gravity="center"
         android:padding="10dp"
         android:text="加载失败，点击重新加载"
+        android:textSize="14sp"
         android:visibility="gone" />
 
 </LinearLayout>

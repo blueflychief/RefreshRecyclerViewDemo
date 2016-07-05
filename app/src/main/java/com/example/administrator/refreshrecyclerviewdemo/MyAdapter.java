@@ -4,21 +4,21 @@ import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.example.administrator.refreshrecyclerviewdemo.recycler.RefreshAdapter;
-import com.example.administrator.refreshrecyclerviewdemo.recycler.RefreshRecycleView;
+import com.example.administrator.refreshrecyclerviewdemo.recycler.CustomRefreshAdapter;
+import com.example.administrator.refreshrecyclerviewdemo.recycler.CustomRefreshRecycleView;
 
 import java.util.List;
 
 /**
  * Created by Lsq on 6/17/2016.--7:43 PM
  */
-public class MyAdapter extends RefreshAdapter<ItemHolder> {
+public class MyAdapter extends CustomRefreshAdapter<ItemHolder> {
 
     private Context mContext;
     private List<String> mDatas;
 
 
-    public MyAdapter(Context context, List<String> list, RefreshRecycleView refreshView) {
+    public MyAdapter(Context context, List<String> list, CustomRefreshRecycleView refreshView) {
         super(context, list, refreshView);
         this.mContext = context;
         this.mDatas = list;
